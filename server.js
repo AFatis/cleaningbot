@@ -32,7 +32,9 @@ function makeText(title, s) {
 실습실: ${s.lab}
 실외 실습실: ${s.outdoor}
 실습실 T자: ${s.tzone}
-강의실: ${s.classroom}`;
+강의실: ${s.classroom}
+
+더 궁금한 점이 있으신가요? 😊`;
 }
 
 app.post('/cleaning', (req, res) => {
@@ -59,6 +61,18 @@ app.post('/cleaning', (req, res) => {
           simpleText: {
             text: makeText(title, schedule)
           }
+        }
+      ],
+      quickReplies: [
+        {
+          label: "🔙 뒤로",
+          action: "block",
+          blockId: "청소시작블록ID"   // 👉 여기 실제 블록ID 넣기
+        },
+        {
+          label: "🏠 처음으로",
+          action: "block",
+          blockId: "시작블록ID"      // 👉 여기 실제 시작블록ID 넣기
         }
       ]
     }
