@@ -67,12 +67,12 @@ app.post('/cleaning', (req, res) => {
         {
           label: "🔙 뒤로",
           action: "block",
-          blockId: "청소시작블록ID"   // 👉 여기 실제 블록ID 넣기
+          blockId: "69f347dcf7e56499190b9a1e"   // 👉 여기 실제 블록ID 넣기
         },
         {
           label: "🏠 처음으로",
           action: "block",
-          blockId: "시작블록ID"      // 👉 여기 실제 시작블록ID 넣기
+          blockId: "69f34838f3d5017cd0310894"      // 👉 여기 실제 시작블록ID 넣기
         }
       ]
     }
