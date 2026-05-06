@@ -3,29 +3,51 @@ const app = express();
 
 app.use(express.json());
 
-const groups = [5,4,3,2,1];
-const startDate = new Date("2026-04-27");
+// ⭐ 수요일 기준 시작일 (중요)
+const startDate = new Date("2026-04-29T00:00:00");
 
+// 주차 계산
 function getWeekNumber(date) {
   const diff = date - startDate;
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
 }
 
-function rotate(arr, n) {
-  return arr.slice(n).concat(arr.slice(0, n));
+// 내림차순 순환 함수 (5→4→3→2→1→5)
+function down(n, step) {
+  return ((n - step - 1 + 5) % 5) + 1;
 }
 
+// T존 계산 (실외 → 강의실 사이 값 2개)
+function getTzone(outdoor, classroom) {
+  const result = [];
+  let current = outdoor;
+
+  while (true) {
+    current = current === 1 ? 5 : current - 1;
+    if (current === classroom) break;
+    result.push(current);
+  }
+
+  return result;
+}
+
+// 스케줄 생성
 function getSchedule(week) {
-  const r = rotate(groups, week % 5);
+  const lab = down(5, week);        // 실습실
+  const outdoor = down(1, week);    // 실외 실습실
+  const classroom = down(4, week);  // 강의실
+
+  const tzoneArr = getTzone(outdoor, classroom);
 
   return {
-    lab: `${r[0]}조`,
-    outdoor: `${r[1]}조`,
-    tzone: `${r[2]}조, ${r[3]}조`,
-    classroom: `${r[4]}조`
+    lab: `${lab}조`,
+    outdoor: `${outdoor}조`,
+    tzone: `${tzoneArr[0]}조, ${tzoneArr[1]}조`,
+    classroom: `${classroom}조`
   };
 }
 
+// 출력 텍스트
 function makeText(title, s) {
   return `🧹 ${title}
 
@@ -37,6 +59,7 @@ function makeText(title, s) {
 더 궁금한 점이 있으신가요? 😊`;
 }
 
+// API
 app.post('/cleaning', (req, res) => {
   const msg = req.body?.userRequest?.utterance || "";
 
@@ -67,17 +90,20 @@ app.post('/cleaning', (req, res) => {
         {
           label: "🔙 뒤로",
           action: "block",
-          blockId: "69f347dcf7e56499190b9a1e"   // 👉 여기 실제 블록ID 넣기
+          blockId: "69f347dcf7e56499190b9a1e"
         },
         {
           label: "🏠 처음으로",
           action: "block",
-          blockId: "69f34838f3d5017cd0310894"      // 👉 여기 실제 시작블록ID 넣기
+          blockId: "69f34838f3d5017cd0310894"
         }
       ]
     }
   });
 });
 
+// 서버 실행
 const port = process.env.PORT || 3000;
-app.listen(port);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
