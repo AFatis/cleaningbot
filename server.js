@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 // 기준 조
-const base = [5, 1, 2, 3, 4];
+const base = [5, 4, 3, 2, 1];
 
 // 수요일 기준 시작일
 const startDate = new Date("2026-04-29"); // 수요일
