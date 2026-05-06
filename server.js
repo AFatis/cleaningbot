@@ -3,34 +3,42 @@ const app = express();
 
 app.use(express.json());
 
-// 기준 조 배열
+// 기준 조
 const base = [5, 1, 2, 3, 4];
 
 // 수요일 기준 시작일
 const startDate = new Date("2026-04-29"); // 수요일
 
-// 수요일 기준 주차 계산
+// 🔵 수요일 기준 주차 계산
 function getWeekNumber(date) {
   const d = new Date(date);
 
-  const day = d.getDay(); // 0(일) ~ 6(토), 수=3
+  const day = d.getDay(); // 0~6
 
-  // 가장 가까운 이전 수요일로 보정
+  // 가장 가까운 이전 수요일로 이동
   const diffToWednesday = (day >= 3) ? day - 3 : day + 4;
   d.setDate(d.getDate() - diffToWednesday);
 
   const diff = d - startDate;
+
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
 }
 
 // 오른쪽 회전
 function rotateRight(arr, n) {
-  return arr.slice(-n).concat(arr.slice(0, -n));
+  const len = arr.length;
+
+  // NaN / 음수 / 큰 값 방지
+  const shift = ((n % len) + len) % len;
+
+  return arr.slice(-shift).concat(arr.slice(0, -shift));
 }
 
-// 스케줄 생성
+// 🔥 스케줄 생성
 function getSchedule(week) {
-  const r = rotateRight(base, week % 5);
+  const safeWeek = ((week % 5) + 5) % 5; // 안정화
+
+  const r = rotateRight(base, safeWeek);
 
   return {
     lab: `${r[0]}조`,
@@ -40,7 +48,7 @@ function getSchedule(week) {
   };
 }
 
-// 출력 텍스트
+// 출력 포맷
 function makeText(title, s) {
   return `🧹 ${title}
 
@@ -58,6 +66,9 @@ app.post('/cleaning', (req, res) => {
 
   const now = new Date();
   const week = getWeekNumber(now);
+
+  // 디버깅용 (문제 있을 때 확인)
+  console.log("week:", week);
 
   let schedule, title;
 
